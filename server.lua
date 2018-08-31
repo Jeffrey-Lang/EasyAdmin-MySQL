@@ -8,6 +8,10 @@ AddEventHandler('onMySQLReady', function ()
 end)
 
 AddEventHandler('ea_data:retrieveBanlist', function(callback)
+	local callback = callback
+	while not dbReady do
+		Wait(500)
+	end
 	MySQL.Async.fetchAll('SELECT * FROM ea_bans', {}, function(bans)
 		callback(bans)
 		print("retrieved banlist")
@@ -15,11 +19,17 @@ AddEventHandler('ea_data:retrieveBanlist', function(callback)
 end)
 
 AddEventHandler('ea_data:addBan', function(data)
+	while not dbReady do
+		Wait(500)
+	end
 	MySQL.Async.execute("INSERT INTO ea_bans (`banid`, `expire`, `identifier`, `steam`, `reason`) VALUES (NULL, @expire, @identifier, @steam, @reason);", {expire = data.expire, identifier = data.identifier, steam = data.steam, reason = data.reason }, function() end)
 	print("added new ban")
 end)
 
 AddEventHandler('ea_data:removeBan', function(data)
+	while not dbReady do
+		Wait(500)
+	end
 	MySQL.Async.execute("DELETE FROM ea_bans WHERE identifier = @identifier AND steam = @steam;", {identifier = data.identifier, steam = data.steam }, function() end)
 	print("deleted old ban")
 end)
