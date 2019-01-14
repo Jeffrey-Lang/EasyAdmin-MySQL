@@ -36,7 +36,7 @@ AddEventHandler('ea_data:addBan', function(data)
 	while not dbReady do
 		Wait(1000)
 	end
-	MySQL.Async.execute("INSERT INTO ea_bans (`banid`, `expire`, `identifier`, `steam`, `reason`) VALUES (NULL, @expire, @identifier, @steam, @reason);", {expire = data.expire, identifier = data.identifier, steam = data.steam, reason = data.reason }, function() end)
+	MySQL.Async.execute("INSERT INTO ea_bans (`banid`, `expire`, `identifier`, `steam`, `reason`, `discord`) VALUES (NULL, @expire, @identifier, @steam, @reason, @discord);", {expire = data.expire, identifier = data.identifier, steam = data.steam, reason = data.reason, discord = data.discord }, function() end)
 	print("added new ban")
 end)
 
