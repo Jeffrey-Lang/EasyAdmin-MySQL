@@ -1,9 +1,22 @@
 local dbReady = false
 local tableQuery = "CREATE TABLE IF NOT EXISTS `ea_bans`( `banid` int(11) NOT NULL UNIQUE AUTO_INCREMENT, `expire` double NOT NULL DEFAULT '10444633200', `identifier` text NOT NULL, `steam` text NOT NULL, `reason` text NOT NULL, PRIMARY KEY(`banid`)) "
 
+updateScripts = {
+	"ALTER TABLE `ea_bans` ADD COLUMN `discord` text NOT NULL",
+}
+
 AddEventHandler('onMySQLReady', function ()
 	MySQL.Async.execute(tableQuery, {}, function() end)
 	print("executed table query")
+
+	-- perform upgrades if necesarry
+	exports['ghmattimysql']:execute("SELECT count(*) FROM information_schema.COLUMNS WHERE COLUMN_NAME = 'discord' and TABLE_NAME = 'ea_bans'", {}, function(count)
+		if count == 0 then
+			exports['ghmattimysql']:execute(updateScripts[1], {}, function() end)
+			print("Performed ea_bans Database Upgrade, no further action is necesarry.")
+		end
+	end)
+	
 	Wait(100)
 	dbReady = true
 end)
