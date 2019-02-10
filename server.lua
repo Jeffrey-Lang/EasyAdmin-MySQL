@@ -38,6 +38,17 @@ AddEventHandler('ea_data:addBan', function(data)
 	end
 	MySQL.Async.execute("INSERT INTO ea_bans (`banid`, `expire`, `identifier`, `steam`, `reason`, `discord`) VALUES (NULL, @expire, @identifier, @steam, @reason, @discord);", {expire = data.expire, identifier = data.identifier, steam = data.steam, reason = data.reason, discord = data.discord or "" }, function() end)
 	print("added new ban")
+		MySQL.Async.execute("INSERT INTO received_bans (`reason`, `byadmin`, `ban_expires`, `banned_on`, `userid` ) VALUES (@reason, @byadmin, @ban_expires, @banned_on, @userid);",
+	{
+		reason =  data.reason,
+		byadmin = 'EasyAdmin',
+		ban_expires = data.expire,
+		banned_on = os.time(os.date("!*t")),
+		userid = data.steam
+	},
+	function()
+		print('Added to received bans')
+	end)
 end)
 
 AddEventHandler('ea_data:removeBan', function(data)
